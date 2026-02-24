@@ -17,7 +17,9 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, SOIL_DEPTHS
+from homeassistant.helpers import entity_registry as er
+
+from .const import CONF_DEPTHS, DEFAULT_DEPTHS, DOMAIN
 from .coordinator import (
     SoilTemperatureConfigEntry,
     SoilTemperatureCoordinator,
@@ -34,11 +36,13 @@ class SoilTemperatureSensorEntityDescription(SensorEntityDescription):
     include_forecast_attrs: bool = False
 
 
-def _build_sensor_descriptions() -> list[SoilTemperatureSensorEntityDescription]:
-    """Build sensor descriptions for all depths and metric types."""
+def _build_sensor_descriptions(
+    depths: list[int],
+) -> list[SoilTemperatureSensorEntityDescription]:
+    """Build sensor descriptions for the given depths."""
     descriptions: list[SoilTemperatureSensorEntityDescription] = []
 
-    for depth in SOIL_DEPTHS:
+    for depth in depths:
         # Use cleaner names for 6cm (the most commonly referenced depth)
         if depth == 6:
             name_prefix = "Soil Temperature"
@@ -80,9 +84,6 @@ def _build_sensor_descriptions() -> list[SoilTemperatureSensorEntityDescription]
     return descriptions
 
 
-SENSOR_DESCRIPTIONS = _build_sensor_descriptions()
-
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: SoilTemperatureConfigEntry,
@@ -90,10 +91,20 @@ async def async_setup_entry(
 ) -> None:
     """Set up Soil Temperature sensors from a config entry."""
     coordinator: SoilTemperatureCoordinator = entry.runtime_data
+    selected_depths = entry.options.get(CONF_DEPTHS, DEFAULT_DEPTHS)
+    descriptions = _build_sensor_descriptions(selected_depths)
+
+    # Clean up entity registry entries for deselected depths
+    ent_reg = er.async_get(hass)
+    valid_keys = {desc.key for desc in descriptions}
+    for entity_entry in er.async_entries_for_config_entry(ent_reg, entry.entry_id):
+        key = entity_entry.unique_id.removeprefix(f"{entry.entry_id}_")
+        if key not in valid_keys:
+            ent_reg.async_remove(entity_entry.entity_id)
 
     async_add_entities(
         SoilTemperatureSensor(coordinator, description)
-        for description in SENSOR_DESCRIPTIONS
+        for description in descriptions
     )
 
 

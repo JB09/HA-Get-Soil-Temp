@@ -3,17 +3,33 @@
     "step": {
       "user": {
         "title": "Set up Soil Temperature",
-        "description": "Select a zone to get soil temperature data for that location.",
+        "description": "Select a zone and the soil depths to monitor.",
         "data": {
-          "zone": "Zone"
+          "zone": "Zone",
+          "depths": "Soil depths"
         }
       }
     },
     "error": {
-      "no_coordinates": "The selected zone does not have coordinates configured."
+      "no_coordinates": "The selected zone does not have coordinates configured.",
+      "no_depths": "At least one soil depth must be selected."
     },
     "abort": {
       "already_configured": "This zone is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Soil Temperature Options",
+        "description": "Select the soil depths to monitor.",
+        "data": {
+          "depths": "Soil depths"
+        }
+      }
+    },
+    "error": {
+      "no_depths": "At least one soil depth must be selected."
     }
   }
 }
