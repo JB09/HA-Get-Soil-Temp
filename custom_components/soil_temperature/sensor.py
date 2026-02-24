@@ -11,12 +11,13 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import UnitOfTemperature
+from homeassistant.const import DeviceEntryType, UnitOfTemperature
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import SOIL_DEPTHS
+from .const import DOMAIN, SOIL_DEPTHS
 from .coordinator import (
     SoilTemperatureConfigEntry,
     SoilTemperatureCoordinator,
@@ -28,7 +29,7 @@ from .coordinator import (
 class SoilTemperatureSensorEntityDescription(SensorEntityDescription):
     """Describe a Soil Temperature sensor entity."""
 
-    value_fn: Callable[[SoilTemperatureData, int], float | None]
+    value_fn: Callable[[SoilTemperatureData], float | None]
     depth_cm: int
     include_forecast_attrs: bool = False
 
@@ -105,7 +106,7 @@ class SoilTemperatureSensor(
 
     _attr_has_entity_name = True
     _attr_device_class = SensorDeviceClass.TEMPERATURE
-    _attr_native_unit_of_measurement = UnitOfTemperature.FAHRENHEIT
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_suggested_display_precision = 1
 
@@ -119,6 +120,12 @@ class SoilTemperatureSensor(
         self.entity_description = description
         self._attr_unique_id = (
             f"{coordinator.config_entry.entry_id}_{description.key}"
+        )
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, coordinator.config_entry.entry_id)},
+            name=coordinator.config_entry.title,
+            manufacturer="Open-Meteo",
+            entry_type=DeviceEntryType.SERVICE,
         )
 
     @property

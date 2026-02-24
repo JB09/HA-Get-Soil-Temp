@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import timedelta
 import logging
 from statistics import mean
 from typing import TypeAlias
@@ -14,6 +14,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_ZONE,
@@ -85,7 +86,7 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
             "hourly": HOURLY_PARAMS,
             "past_days": 5,
             "forecast_days": 7,
-            "temperature_unit": "fahrenheit",
+            "temperature_unit": "celsius",
             "timezone": "auto",
         }
 
@@ -106,13 +107,18 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
 
     def _process_response(self, data: dict) -> SoilTemperatureData:
         """Process the Open-Meteo API response into structured data."""
+        if data.get("error"):
+            raise UpdateFailed(
+                f"Open-Meteo API error: {data.get('reason', 'Unknown error')}"
+            )
+
         hourly = data.get("hourly", {})
         time_list = hourly.get("time", [])
 
         if not time_list:
             raise UpdateFailed("No hourly data returned from Open-Meteo")
 
-        now = datetime.now()
+        now = dt_util.now()
         result = SoilTemperatureData()
 
         for depth in SOIL_DEPTHS:
@@ -127,7 +133,9 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
             paired = []
             for i, t in enumerate(time_list):
                 if i < len(values) and values[i] is not None:
-                    ts = datetime.fromisoformat(t)
+                    ts = dt_util.parse_datetime(t)
+                    if ts is None:
+                        continue
                     paired.append((ts, values[i]))
 
             if not paired:
