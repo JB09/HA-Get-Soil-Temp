@@ -22,15 +22,24 @@ class SoilTemperatureFlowHandler(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle a flow initialized by the user."""
-        if user_input is not None:
-            await self.async_set_unique_id(user_input[CONF_ZONE])
-            self._abort_if_unique_id_configured()
+        errors: dict[str, str] = {}
 
+        if user_input is not None:
             state = self.hass.states.get(user_input[CONF_ZONE])
-            return self.async_create_entry(
-                title=state.name if state else "Soil Temperature",
-                data={CONF_ZONE: user_input[CONF_ZONE]},
-            )
+            if (
+                state is None
+                or state.attributes.get("latitude") is None
+                or state.attributes.get("longitude") is None
+            ):
+                errors["base"] = "no_coordinates"
+            else:
+                await self.async_set_unique_id(user_input[CONF_ZONE])
+                self._abort_if_unique_id_configured()
+
+                return self.async_create_entry(
+                    title=state.name,
+                    data={CONF_ZONE: user_input[CONF_ZONE]},
+                )
 
         return self.async_show_form(
             step_id="user",
@@ -41,4 +50,5 @@ class SoilTemperatureFlowHandler(ConfigFlow, domain=DOMAIN):
                     ),
                 }
             ),
+            errors=errors,
         )

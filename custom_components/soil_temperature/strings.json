@@ -9,6 +9,9 @@
         }
       }
     },
+    "error": {
+      "no_coordinates": "The selected zone does not have coordinates configured."
+    },
     "abort": {
       "already_configured": "This zone is already configured."
     }
