@@ -1,0 +1,63 @@
+# Soil Temperature for Home Assistant
+
+A custom Home Assistant integration that provides soil temperature data at multiple depths using the [Open-Meteo](https://open-meteo.com/) free API.
+
+## Features
+
+- Soil temperature at 4 depths: 0cm (surface), 6cm, 18cm, and 54cm
+- Current temperature, 24-hour average, and 5-day average for each depth
+- 7-day daily forecast included as sensor attributes
+- Zone-based configuration (uses your HA zone's coordinates)
+- 30-minute polling interval
+- HACS compatible
+
+## Installation
+
+### HACS (Recommended)
+
+1. Open HACS in Home Assistant
+2. Click the three dots menu (top right) → **Custom repositories**
+3. Add `https://github.com/JB09/HA-Get-Soil-Temp` as an **Integration**
+4. Search for "Soil Temperature" and install
+5. Restart Home Assistant
+
+### Manual
+
+1. Copy the `custom_components/soil_temperature` folder to your Home Assistant `custom_components` directory
+2. Restart Home Assistant
+
+## Configuration
+
+1. Go to **Settings** → **Devices & Services** → **Add Integration**
+2. Search for **Soil Temperature**
+3. Select a zone (e.g., "Home") — the integration uses the zone's latitude/longitude
+4. Done! 12 sensors will be created
+
+## Sensors
+
+For each soil depth (0cm, 6cm, 18cm, 54cm), three sensors are created:
+
+| Sensor | Description |
+|--------|-------------|
+| Current | Latest hourly soil temperature reading |
+| 24h Average | Mean temperature over the last 24 hours |
+| 5-Day Average | Mean temperature over the last 5 days |
+
+The 6cm depth sensors use simplified names (e.g., "Soil Temperature Current") since this is the most commonly referenced depth for gardening and agriculture.
+
+Current temperature sensors include a 7-day daily forecast as extra state attributes (e.g., `forecast_2024-03-15: 52.3`).
+
+All temperatures are reported in Fahrenheit. Home Assistant will automatically convert to Celsius if your system is configured for metric units.
+
+## Data Source
+
+This integration uses the free [Open-Meteo API](https://open-meteo.com/en/docs) which provides:
+
+- Hourly soil temperature data at 0cm, 6cm, 18cm, and 54cm depths
+- Up to 16 days of forecast data
+- 5 days of historical data
+- No API key required
+
+## Multiple Locations
+
+To monitor soil temperature at different locations, simply add the integration multiple times — each with a different zone. Create custom zones in Home Assistant under **Settings** → **Areas & Zones** → **Zones**.
