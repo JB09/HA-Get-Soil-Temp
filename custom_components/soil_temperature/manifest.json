@@ -1,12 +1,12 @@
 {
   "domain": "soil_temperature",
   "name": "Soil Temperature",
-  "version": "0.1.0",
-  "config_flow": true,
-  "iot_class": "cloud_polling",
   "codeowners": ["@JB09"],
+  "config_flow": true,
   "documentation": "https://github.com/JB09/HA-Get-Soil-Temp",
-  "issue_tracker": "https://github.com/JB09/HA-Get-Soil-Temp/issues",
   "homeassistant": "2024.1.0",
-  "requirements": []
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/JB09/HA-Get-Soil-Temp/issues",
+  "requirements": [],
+  "version": "0.1.0"
 }
