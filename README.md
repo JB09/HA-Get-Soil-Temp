@@ -5,7 +5,7 @@ A custom Home Assistant integration that provides soil temperature data at multi
 ## Features
 
 - Soil temperature at up to 4 depths: 0cm (surface), 6cm, 18cm, and 54cm
-- **Configurable depth selection** — choose which depths to monitor during setup or later via options
+- Configurable depth selection — choose which depths to monitor during setup or later via options
 - Current temperature, 24-hour average, and 5-day average for each selected depth
 - 7-day daily forecast included as sensor attributes
 - Zone-based configuration (uses your HA zone's coordinates)
@@ -34,10 +34,6 @@ A custom Home Assistant integration that provides soil temperature data at multi
 3. Select a zone (e.g., "Home") — the integration uses the zone's latitude/longitude
 4. Select which soil depths to monitor (6cm is selected by default)
 5. Done! 3 sensors are created per selected depth
-
-### Changing Depths After Setup
-
-Go to **Settings** → **Devices & Services**, find the Soil Temperature integration, and click **Configure**. You can add or remove depths at any time — the integration will reload and update the sensors automatically.
 
 ## Sensors
 
