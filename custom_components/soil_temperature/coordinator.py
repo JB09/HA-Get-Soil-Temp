@@ -17,12 +17,13 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    CONF_DEPTHS,
     CONF_ZONE,
+    DEFAULT_DEPTHS,
     DOMAIN,
-    HOURLY_PARAMS,
     OPEN_METEO_FORECAST_URL,
     SCAN_INTERVAL,
-    SOIL_DEPTHS,
+    build_hourly_params,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -60,6 +61,7 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
             config_entry=entry,
         )
         self._zone_entity_id: str = entry.data[CONF_ZONE]
+        self._depths: list[int] = entry.options.get(CONF_DEPTHS, DEFAULT_DEPTHS)
 
     def _get_zone_coordinates(self) -> tuple[float, float]:
         """Resolve lat/lon from the configured zone entity."""
@@ -83,7 +85,7 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
         params = {
             "latitude": latitude,
             "longitude": longitude,
-            "hourly": HOURLY_PARAMS,
+            "hourly": build_hourly_params(self._depths),
             "past_days": 5,
             "forecast_days": 7,
             "temperature_unit": "celsius",
@@ -121,7 +123,7 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
         now = dt_util.now()
         result = SoilTemperatureData()
 
-        for depth in SOIL_DEPTHS:
+        for depth in self._depths:
             key = f"soil_temperature_{depth}cm"
             values = hourly.get(key, [])
 
