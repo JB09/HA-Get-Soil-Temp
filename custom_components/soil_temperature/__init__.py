@@ -62,6 +62,9 @@ async def async_setup_entry(
 
     entry.runtime_data = coordinator
 
+    await hass.async_add_import_executor_job(
+        __import__, "custom_components.soil_temperature.sensor"
+    )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
