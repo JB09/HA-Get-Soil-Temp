@@ -7,7 +7,7 @@ A custom Home Assistant integration that provides soil temperature data at multi
 - Soil temperature at up to 4 depths: 0cm (surface), 6cm, 18cm, and 54cm
 - Configurable depth selection — choose which depths to monitor during setup or later via options
 - Current temperature, 24-hour average, and 5-day average for each selected depth
-- 7-day daily forecast included as sensor attributes
+- 7-day daily forecast included as attributes in 24-hour average sensors
 - Zone-based configuration (uses your HA zone's coordinates)
 - 30-minute polling interval
 - HACS compatible
@@ -47,7 +47,7 @@ For each selected soil depth, three sensors are created:
 
 The 6cm depth sensors use simplified names (e.g., "Soil Temperature Current") since this is the most commonly referenced depth for gardening and agriculture.
 
-Current temperature sensors include a 7-day daily forecast as extra state attributes (e.g., `forecast_2024-03-15: 52.3`).
+24-hour average temperature sensors include a 7-day daily forecast as extra state attributes (e.g., `forecast_2024-03-15: 52.3`).
 
 All temperatures are reported in Celsius. Home Assistant will automatically convert to Fahrenheit if your system is configured for imperial units.
 
