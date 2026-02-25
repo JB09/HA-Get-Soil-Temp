@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 from statistics import mean
 from typing import TypeAlias
@@ -120,6 +120,11 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
         if not time_list:
             raise UpdateFailed("No hourly data returned from Open-Meteo")
 
+        # Build the timezone from the API response so naive timestamps
+        # become offset-aware and can be compared with dt_util.now().
+        utc_offset = data.get("utc_offset_seconds", 0)
+        api_tz = timezone(timedelta(seconds=utc_offset))
+
         now = dt_util.now()
         result = SoilTemperatureData()
 
@@ -138,6 +143,8 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
                     ts = dt_util.parse_datetime(t)
                     if ts is None:
                         continue
+                    if ts.tzinfo is None:
+                        ts = ts.replace(tzinfo=api_tz)
                     paired.append((ts, values[i]))
 
             if not paired:
