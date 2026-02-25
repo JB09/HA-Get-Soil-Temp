@@ -160,17 +160,20 @@ class SoilTemperatureCoordinator(DataUpdateCoordinator[SoilTemperatureData]):
             vals_24h = [v for ts, v in paired if cutoff_24h <= ts <= now]
             avg_24h = round(mean(vals_24h), 1) if vals_24h else None
 
-            # 5-day average: values from the last 5 days
-            cutoff_5day = now - timedelta(days=5)
+            # 5-day average: trailing 120 hours
+            cutoff_5day = now - timedelta(hours=120)
             vals_5day = [v for ts, v in paired if cutoff_5day <= ts <= now]
             avg_5day = round(mean(vals_5day), 1) if vals_5day else None
 
-            # Daily forecast: average per future day
+            # Daily forecast: today uses all hours, future days use future hours only
+            today_str = now.strftime("%Y-%m-%d")
             daily_buckets: dict[str, list[float]] = {}
-            future_values = [(ts, v) for ts, v in paired if ts > now]
-            for ts, v in future_values:
+            for ts, v in paired:
                 date_str = ts.strftime("%Y-%m-%d")
-                daily_buckets.setdefault(date_str, []).append(v)
+                if date_str == today_str:
+                    daily_buckets.setdefault(date_str, []).append(v)
+                elif ts > now:
+                    daily_buckets.setdefault(date_str, []).append(v)
             forecast_daily = {
                 d: round(mean(vs), 1) for d, vs in daily_buckets.items()
             }

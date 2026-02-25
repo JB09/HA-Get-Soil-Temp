@@ -61,7 +61,6 @@ def _build_sensor_descriptions(
                         data.depths[d].current if d in data.depths else None
                     ),
                     depth_cm=depth,
-                    include_forecast_attrs=True,
                 ),
                 SoilTemperatureSensorEntityDescription(
                     key=f"{key_prefix}_24h_avg",
@@ -70,6 +69,7 @@ def _build_sensor_descriptions(
                         data.depths[d].avg_24h if d in data.depths else None
                     ),
                     depth_cm=depth,
+                    include_forecast_attrs=True,
                 ),
                 SoilTemperatureSensorEntityDescription(
                     key=f"{key_prefix}_5day_avg",
