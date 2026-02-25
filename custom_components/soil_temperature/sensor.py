@@ -168,5 +168,4 @@ class SoilTemperatureSensor(
                 attrs[f"forecast_{date_str}"] = round(converted, 1)
             else:
                 attrs[f"forecast_{date_str}"] = temp
-        attrs["forecast_unit"] = target_unit
         return attrs
