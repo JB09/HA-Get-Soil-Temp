@@ -12,6 +12,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import UnitOfTemperature
+from homeassistant.util.unit_conversion import TemperatureConverter
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -157,7 +158,15 @@ class SoilTemperatureSensor(
         depth_data = self.coordinator.data.depths.get(depth)
         if depth_data is None or not depth_data.forecast_daily:
             return None
+        target_unit = self.hass.config.units.temperature_unit
         attrs: dict[str, str | float] = {}
         for date_str, temp in depth_data.forecast_daily.items():
-            attrs[f"forecast_{date_str}"] = temp
+            if target_unit != UnitOfTemperature.CELSIUS:
+                converted = TemperatureConverter.convert(
+                    temp, UnitOfTemperature.CELSIUS, target_unit
+                )
+                attrs[f"forecast_{date_str}"] = round(converted, 1)
+            else:
+                attrs[f"forecast_{date_str}"] = temp
+        attrs["forecast_unit"] = target_unit
         return attrs
