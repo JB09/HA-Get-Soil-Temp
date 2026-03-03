@@ -24,7 +24,8 @@
         "title": "Soil Temperature Options",
         "description": "Select the soil depths to monitor.",
         "data": {
-          "depths": "Soil depths"
+          "depths": "Soil depths",
+          "static_forecast_attrs": "Use static forecast attribute names (for Bubble Card)"
         }
       }
     },

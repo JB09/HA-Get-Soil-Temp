@@ -17,7 +17,14 @@ from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig
 
-from .const import CONF_DEPTHS, CONF_ZONE, DEFAULT_DEPTHS, DOMAIN, SOIL_DEPTHS
+from .const import (
+    CONF_DEPTHS,
+    CONF_STATIC_FORECAST_ATTRS,
+    CONF_ZONE,
+    DEFAULT_DEPTHS,
+    DOMAIN,
+    SOIL_DEPTHS,
+)
 
 DEPTH_OPTIONS = {str(d): f"{d} cm" for d in SOIL_DEPTHS}
 
@@ -104,7 +111,12 @@ class SoilTemperatureOptionsFlowHandler(OptionsFlow):
                     errors={"base": "no_depths"},
                 )
             return self.async_create_entry(
-                data={CONF_DEPTHS: selected_depths},
+                data={
+                    CONF_DEPTHS: selected_depths,
+                    CONF_STATIC_FORECAST_ATTRS: user_input.get(
+                        CONF_STATIC_FORECAST_ATTRS, False
+                    ),
+                },
             )
 
         return self.async_show_form(
@@ -117,11 +129,18 @@ class SoilTemperatureOptionsFlowHandler(OptionsFlow):
         current_depths = self.config_entry.options.get(
             CONF_DEPTHS, DEFAULT_DEPTHS
         )
+        current_static = self.config_entry.options.get(
+            CONF_STATIC_FORECAST_ATTRS, False
+        )
         return vol.Schema(
             {
                 vol.Optional(
                     CONF_DEPTHS,
                     default=[str(d) for d in current_depths],
                 ): cv.multi_select(DEPTH_OPTIONS),
+                vol.Optional(
+                    CONF_STATIC_FORECAST_ATTRS,
+                    default=current_static,
+                ): bool,
             }
         )
