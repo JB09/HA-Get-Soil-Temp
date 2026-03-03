@@ -20,7 +20,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_DEPTHS, DEFAULT_DEPTHS, DOMAIN
+from .const import CONF_DEPTHS, CONF_STATIC_FORECAST_ATTRS, DEFAULT_DEPTHS, DOMAIN
 from .coordinator import (
     SoilTemperatureConfigEntry,
     SoilTemperatureCoordinator,
@@ -159,13 +159,22 @@ class SoilTemperatureSensor(
         if depth_data is None or not depth_data.forecast_daily:
             return None
         target_unit = self.hass.config.units.temperature_unit
+        use_static = self.coordinator.config_entry.options.get(
+            CONF_STATIC_FORECAST_ATTRS, False
+        )
         attrs: dict[str, str | float] = {}
-        for date_str, temp in depth_data.forecast_daily.items():
+        for i, date_str in enumerate(sorted(depth_data.forecast_daily)):
+            temp = depth_data.forecast_daily[date_str]
             if target_unit != UnitOfTemperature.CELSIUS:
-                converted = TemperatureConverter.convert(
-                    temp, UnitOfTemperature.CELSIUS, target_unit
+                temp = round(
+                    TemperatureConverter.convert(
+                        temp, UnitOfTemperature.CELSIUS, target_unit
+                    ),
+                    1,
                 )
-                attrs[f"forecast_{date_str}"] = round(converted, 1)
+            if use_static:
+                attrs[f"forecast_{i}d"] = temp
+                attrs[f"forecast_{i}d_date"] = date_str
             else:
                 attrs[f"forecast_{date_str}"] = temp
         return attrs

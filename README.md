@@ -7,7 +7,7 @@ A custom Home Assistant integration that provides soil temperature data at multi
 - Soil temperature at up to 4 depths: 0cm (surface), 6cm, 18cm, and 54cm
 - Configurable depth selection — choose which depths to monitor during setup or later via options
 - Current temperature, 24-hour average, and 5-day average for each selected depth
-- 7-day daily forecast included as attributes in 24-hour average sensors
+- 7-day daily forecast included as attributes in 24-hour average sensors, with an optional static naming mode for dashboard card compatibility
 - Zone-based configuration (uses your HA zone's coordinates)
 - 30-minute polling interval
 - HACS compatible
@@ -47,7 +47,19 @@ For each selected soil depth, three sensors are created:
 
 The 6cm depth sensors use simplified names (e.g., "Soil Temperature Current") since this is the most commonly referenced depth for gardening and agriculture.
 
-24-hour average temperature sensors include a 7-day daily forecast as extra state attributes (e.g., `forecast_2024-03-15: 52.3`).
+24-hour average temperature sensors include a 7-day daily forecast as extra state attributes. By default, attributes are named by date (e.g., `forecast_2024-03-15: 52.3`).
+
+### Static Forecast Attribute Names
+
+Enable **"Use static forecast attribute names"** in the integration options to switch to indexed attribute names that don't change daily. This is useful for dashboard cards like [Bubble Card](https://github.com/Clooos/Bubble-Card) sub-buttons that require static attribute references.
+
+| Attribute | Description |
+|-----------|-------------|
+| `forecast_0d` | Today's forecast temperature |
+| `forecast_0d_date` | Today's date (e.g., `2024-03-15`) |
+| `forecast_1d` | Tomorrow's forecast temperature |
+| `forecast_1d_date` | Tomorrow's date |
+| ... | Up to `forecast_6d` / `forecast_6d_date` |
 
 All temperatures are reported in Celsius. Home Assistant will automatically convert to Fahrenheit if your system is configured for imperial units.
 

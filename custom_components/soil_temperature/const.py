@@ -10,6 +10,7 @@ OPEN_METEO_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
 CONF_ZONE = "zone"
 CONF_DEPTHS = "depths"
+CONF_STATIC_FORECAST_ATTRS = "static_forecast_attrs"
 
 SOIL_DEPTHS = [0, 6, 18, 54]
 DEFAULT_DEPTHS = [6]
