@@ -51,10 +51,6 @@ The 6cm depth sensors use simplified names (e.g., "Soil Temperature Current") si
 
 All temperatures are reported in Celsius. Home Assistant will automatically convert to Fahrenheit if your system is configured for imperial units.
 
-## Upgrading from a Previous Version
-
-If you are upgrading from a version that did not support depth selection, all four depths (0cm, 6cm, 18cm, 54cm) will remain enabled automatically — no existing sensors are lost. You can then go to **Configure** to deselect any depths you don't need.
-
 ## Data Source
 
 This integration uses the free [Open-Meteo API](https://open-meteo.com/en/docs) which provides:
